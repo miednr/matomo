@@ -1,0 +1,15 @@
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
+
+async function handleRequest(request) {
+  const cfConnectingIp = request.headers.get('CF-Connecting-IP');
+  const newHeaders = new Headers(request.headers);
+  if (cfConnectingIp) {
+    newHeaders.set('HTTP_X_FORWARDED_FOR', cfConnectingIp);
+  }
+  const newRequest = new Request(request, {
+    headers: newHeaders,
+  });
+  return fetch(newRequest);
+}
